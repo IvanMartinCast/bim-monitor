@@ -1,1 +1,15 @@
-
+{
+  "Spain": {
+    "regions": ["Cataluña", "Madrid", "Andalucía"],
+    "sources": [
+      "https://www.mitma.gob.es/",
+      "https://www.buildingsmart.es/"
+    ]
+  },
+  "UK": {
+    "regions": ["England"],
+    "sources": [
+      "https://www.ukbimframework.org/"
+    ]
+  }
+}
