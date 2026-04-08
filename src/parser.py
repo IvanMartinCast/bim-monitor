@@ -7,7 +7,7 @@ def parse_document(item, country, region):
         "region": region,
         "fecha_publicacion": datetime.today().strftime("%Y-%m-%d"),
         "entrada_vigor": "",
-        "version": "1",
-        "estado": "vigente",
+        "version": "detectado",
+        "estado": "pendiente validación",
         "fuente": item["url"]
     }
