@@ -1,3 +1,4 @@
+raise Exception("ESTO ES UNA PRUEBA")
 from updater import update_data
 
 def run():
