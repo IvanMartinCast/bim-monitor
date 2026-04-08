@@ -4,21 +4,17 @@ import os
 FILE_PATH = "data/bim_normativas.xlsx"
 
 def update_data(new_data):
-    print("DATOS RECIBIDOS:", len(new_data))
-
-    if not new_data:
-        print("⚠️ No hay datos para guardar")
-        return
-
-    if os.path.exists(FILE_PATH):
-        df_existing = pd.read_excel(FILE_PATH)
-    else:
-        df_existing = pd.DataFrame()
+    print("📊 DATOS RECIBIDOS:", new_data)
 
     df_new = pd.DataFrame(new_data)
 
-    df_final = pd.concat([df_existing, df_new], ignore_index=True)
+    print("📊 DataFrame nuevo:")
+    print(df_new)
 
-    df_final.to_excel(FILE_PATH, index=False)
+    # Crear carpeta si no existe
+    os.makedirs("data", exist_ok=True)
 
-    print("✅ Excel actualizado")
+    # Guardar SIEMPRE (sobrescribe para test)
+    df_new.to_excel(FILE_PATH, index=False)
+
+    print(f"✅ Excel guardado en {FILE_PATH}")
