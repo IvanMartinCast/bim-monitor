@@ -1,15 +1,16 @@
 {
   "Spain": {
-    "regions": ["Cataluña", "Madrid", "Andalucía"],
+    "regions": ["Nacional"],
     "sources": [
-      "https://www.mitma.gob.es/",
+      "https://www.mitma.gob.es/arquitectura-vivienda-y-suelo/bim",
       "https://www.buildingsmart.es/"
     ]
   },
   "UK": {
-    "regions": ["England"],
+    "regions": ["Nacional"],
     "sources": [
-      "https://www.ukbimframework.org/"
+      "https://www.ukbimframework.org/",
+      "https://www.gov.uk/search/all?keywords=BIM"
     ]
   }
 }
