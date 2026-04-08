@@ -1,47 +1,54 @@
-import os
+import json
+from scraper import fetch_links
+from validator import is_official, is_bim_relevant
+from parser import parse_document
 from updater import update_data
 
 def run():
-    print("🚀 INICIO DEL SCRIPT")
+    print("🚀 INICIO DEL MONITOR BIM")
 
-    # Ver contenido de carpeta data antes
-    if os.path.exists("data"):
-        print("📂 Archivos en data (ANTES):", os.listdir("data"))
-    else:
-        print("📂 Carpeta data no existe")
+    # Cargar configuración
+    with open("config/countries.json", "r", encoding="utf-8") as f:
+        config = json.load(f)
 
-    # Datos de prueba (forzados)
-    test_data = [
-        {
-            "nombre": "TEST BIM",
-            "pais": "España",
-            "region": "Madrid",
-            "fecha_publicacion": "2024-01-01",
-            "entrada_vigor": "2024-02-01",
-            "version": "1.0",
-            "estado": "vigente",
-            "fuente": "https://test.com"
-        }
-    ]
+    results = []
 
-    print("📊 Enviando datos al updater...")
-    update_data(test_data)
+    # Recorrer países
+    for country, data in config.items():
+        print(f"\n🌍 Procesando país: {country}")
 
-    # Ver contenido de carpeta data después
-    if os.path.exists("data"):
-        print("📂 Archivos en data (DESPUÉS):", os.listdir("data"))
+        regions = data.get("regions", [])
+        sources = data.get("sources", [])
 
-        # Mostrar tamaño del archivo
-        file_path = "data/bim_normativas.xlsx"
-        if os.path.exists(file_path):
-            size = os.path.getsize(file_path)
-            print(f"📄 Excel generado. Tamaño: {size} bytes")
-        else:
-            print("❌ Excel NO encontrado después de ejecutar updater")
-    else:
-        print("❌ Carpeta data sigue sin existir")
+        for region in regions:
+            print(f"  📍 Región: {region}")
 
-    print("✅ FIN DEL SCRIPT")
+            for source in sources:
+                print(f"    🔎 Fuente: {source}")
+
+                links = fetch_links(source)
+
+                for link in links:
+                    title = link.get("title", "")
+                    url = link.get("url", "")
+
+                    # Validación
+                    if not is_official(url):
+                        continue
+
+                    if not is_bim_relevant(title):
+                        continue
+
+                    # Parseo
+                    parsed = parse_document(link, country, region)
+                    results.append(parsed)
+
+    print(f"\n📊 TOTAL DOCUMENTOS DETECTADOS: {len(results)}")
+
+    # Guardar resultados
+    update_data(results)
+
+    print("✅ FIN DEL MONITOR BIM")
 
 
 if __name__ == "__main__":
