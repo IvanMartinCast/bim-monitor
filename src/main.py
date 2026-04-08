@@ -21,8 +21,8 @@ def run():
                         parsed = parse_document(link, country, region)
                         results.append(parsed)
 
+    print("RESULTADOS:", len(results))
     update_data(results)
-    print(f"{len(results)} registros procesados")
 
 if __name__ == "__main__":
     run()
