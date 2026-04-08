@@ -3,29 +3,22 @@ import os
 
 FILE_PATH = "data/bim_normativas.xlsx"
 
-COLUMNS = [
-    "nombre", "pais", "region",
-    "fecha_publicacion", "entrada_vigor",
-    "version", "estado", "fuente"
-]
+def update_data(new_data):
+    print("DATOS RECIBIDOS:", len(new_data))
 
-def load_data():
+    if not new_data:
+        print("⚠️ No hay datos para guardar")
+        return
+
     if os.path.exists(FILE_PATH):
-        return pd.read_excel(FILE_PATH)
-    return pd.DataFrame(columns=COLUMNS)
+        df_existing = pd.read_excel(FILE_PATH)
+    else:
+        df_existing = pd.DataFrame()
 
+    df_new = pd.DataFrame(new_data)
 
-def save_data(df):
-    df.to_excel(FILE_PATH, index=False)
+    df_final = pd.concat([df_existing, df_new], ignore_index=True)
 
+    df_final.to_excel(FILE_PATH, index=False)
 
-def update_data(new_rows):
-    df = load_data()
-
-    for row in new_rows:
-        exists = df["fuente"].str.contains(row["fuente"]).any()
-
-        if not exists:
-            df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
-
-    save_data(df)
+    print("✅ Excel actualizado")
