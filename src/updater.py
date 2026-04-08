@@ -1,26 +1,38 @@
-import pandas as pd
+from openpyxl import Workbook
 import os
 
 FILE_PATH = "data/bim_normativas.xlsx"
 
-def update_data(new_data):
-    print("📊 DATOS RECIBIDOS:", new_data)
+def update_data(data):
+    print("Creando Excel desde cero...")
 
-    # Asegurar carpeta
     os.makedirs("data", exist_ok=True)
 
-    # Crear DataFrame
-    df = pd.DataFrame(new_data)
+    wb = Workbook()
+    ws = wb.active
 
-    print("📊 DataFrame:")
-    print(df)
+    # Cabeceras
+    headers = [
+        "nombre", "pais", "region",
+        "fecha_publicacion", "entrada_vigor",
+        "version", "estado", "fuente"
+    ]
 
-    # 🔥 BORRAR archivo anterior si existe
-    if os.path.exists(FILE_PATH):
-        os.remove(FILE_PATH)
-        print("🗑️ Excel anterior eliminado")
+    ws.append(headers)
 
-    # 🔥 CREAR nuevo Excel
-    df.to_excel(FILE_PATH, index=False)
+    # Datos
+    for row in data:
+        ws.append([
+            row.get("nombre"),
+            row.get("pais"),
+            row.get("region"),
+            row.get("fecha_publicacion"),
+            row.get("entrada_vigor"),
+            row.get("version"),
+            row.get("estado"),
+            row.get("fuente")
+        ])
 
-    print("✅ Nuevo Excel creado")
+    wb.save(FILE_PATH)
+
+    print("✅ Excel creado correctamente")
