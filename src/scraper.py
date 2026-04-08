@@ -1,41 +1,33 @@
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
 
-KEYWORDS = [
-    "bim",
-    "iso 19650",
-    "building information modeling",
-    "digital construction",
-    "bim standard",
-    "bim guide"
-]
+def search_bim(country):
+    query = f"BIM regulation {country} ISO 19650 standard government"
+    url = f"https://www.bing.com/search?q={query.replace(' ', '+')}"
 
-def fetch_links(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        links = []
+        results = []
 
-        for a in soup.find_all("a", href=True):
-            href = a["href"]
-            text = a.get_text(strip=True)
+        for a in soup.select("li.b_algo h2 a"):
+            title = a.get_text()
+            link = a["href"]
 
-            full_url = urljoin(url, href)
-            combined = f"{text} {href}".lower()
+            results.append({
+                "title": title,
+                "url": link
+            })
 
-            if any(k in combined for k in KEYWORDS):
-                if full_url.startswith("http"):
-                    links.append({
-                        "title": text if text else "Documento BIM",
-                        "url": full_url
-                    })
+        print(f"🌐 {country}: {len(results)} resultados encontrados")
 
-        print(f"🔎 {url} → {len(links)} posibles documentos BIM")
-
-        return links
+        return results
 
     except Exception as e:
-        print(f"Error en {url}: {e}")
+        print(f"Error buscando {country}: {e}")
         return []
