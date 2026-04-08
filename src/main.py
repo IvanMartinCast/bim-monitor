@@ -1,54 +1,47 @@
 import json
-from scraper import fetch_links
+from scraper import search_bim
 from validator import is_official, is_bim_relevant
 from parser import parse_document
 from updater import update_data
 
 def run():
-    print("🚀 INICIO DEL MONITOR BIM")
+    print("🚀 INICIO DEL MONITOR BIM GLOBAL")
 
-    # Cargar configuración
+    # Cargar países
     with open("config/countries.json", "r", encoding="utf-8") as f:
         config = json.load(f)
 
     results = []
 
     # Recorrer países
-    for country, data in config.items():
-        print(f"\n🌍 Procesando país: {country}")
+    for country in config.keys():
+        print(f"\n🌍 Buscando en: {country}")
 
-        regions = data.get("regions", [])
-        sources = data.get("sources", [])
+        # 🔎 búsqueda global tipo buscador
+        search_results = search_bim(country)
 
-        for region in regions:
-            print(f"  📍 Región: {region}")
+        for item in search_results:
+            title = item.get("title", "")
+            url = item.get("url", "")
 
-            for source in sources:
-                print(f"    🔎 Fuente: {source}")
+            # Validación de fuente oficial
+            if not is_official(url):
+                continue
 
-                links = fetch_links(source)
+            # Validación de contenido BIM
+            if not is_bim_relevant(title):
+                continue
 
-                for link in links:
-                    title = link.get("title", "")
-                    url = link.get("url", "")
+            # Parseo
+            parsed = parse_document(item, country, "Nacional")
+            results.append(parsed)
 
-                    # Validación
-                    if not is_official(url):
-                        continue
+    print(f"\n📊 TOTAL DOCUMENTOS FILTRADOS: {len(results)}")
 
-                    if not is_bim_relevant(title):
-                        continue
-
-                    # Parseo
-                    parsed = parse_document(link, country, region)
-                    results.append(parsed)
-
-    print(f"\n📊 TOTAL DOCUMENTOS DETECTADOS: {len(results)}")
-
-    # Guardar resultados
+    # Guardar resultados en Excel
     update_data(results)
 
-    print("✅ FIN DEL MONITOR BIM")
+    print("✅ FIN DEL MONITOR BIM GLOBAL")
 
 
 if __name__ == "__main__":
